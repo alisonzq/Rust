@@ -9,6 +9,7 @@
 
 use esp_hal::clock::CpuClock;
 use esp_hal::delay::Delay;
+use esp_hal::gpio::{Level, Output, OutputConfig};
 use esp_hal::main;
 use esp_println::println;
 
@@ -33,23 +34,32 @@ fn main() -> ! {
     // generator parameters: -o esp32
 
     let config = esp_hal::Config::default().with_cpu_clock(CpuClock::max());
-    let _peripherals = esp_hal::init(config);
+    let peripherals = esp_hal::init(config);
     let delay = Delay::new();
 
     //mut = mutable can change later, rust vars are constant by default
-    let mut count: u32 = 10;
+    //let mut count: u32 = 0;
     //let v = [1, 2, 3];
+    let mut led = Output::new(peripherals.GPIO13, Level::Low, OutputConfig::default());
+    let delays = [200, 200, 200, 600, 600, 600, 200, 200, 200];
     loop {
-        //println!("{}", v[count as usize])
-        //count in hex: {:x}
+        /*println!("{}", v[count as usize])
+        /count in hex: {:x}
         if count == 0 {
             println!("Lifftoff!");
         }
         else {
             println!("{}", count);
             count -= 1;
+        } */
+        
+        for d in delays {
+            led.set_high();
+            delay.delay_millis(d);
+            led.set_low();
+            delay.delay_millis(200);
         }
-        delay.delay_millis(1000);
+        delay.delay_millis(1500); 
     }
 
     // for inspiration have a look at the examples at https://github.com/esp-rs/esp-hal/tree/esp-hal-v1.2.2/examples
